@@ -1,0 +1,67 @@
+- name: Create sqlReports job dir
+  file:
+   path: /var/lib/jenkins/jobs/sqlReports
+   state: directory
+   mode: 0755
+   owner: jenkins
+   group: jenkins
+
+- name: Create sqlReports pipeline job
+  copy:
+   src: config.xml
+   dest: /var/lib/jenkins/jobs/sqlReports/config.xml
+   owner: jenkins
+   group: jenkins
+   mode: 0755
+
+- name: Create local maven repo entry for custom secure.jar 
+  file:
+   path: /var/lib/jenkins/.m2/repository/ccautils/secure/1.0
+   state: directory
+   mode: 0755
+   owner: jenkins
+   group: jenkins
+
+- name: Copy secure jar to local maven repo
+  copy: 
+   src: secure-1.0.jar
+   dest: /var/lib/jenkins/.m2/repository/ccautils/secure/1.0/secure-1.0.jar
+   owner: jenkins
+   group: jenkins
+   mode: 0755
+
+
+- name: Create local maven repo entry for custom jdbc driver jar
+  file:
+   path: /var/lib/jenkins/.m2/repository/com/oracle/ojdbc7/12.1.0.1
+   state: directory
+   mode: 0755
+   owner: jenkins
+   group: jenkins
+
+- name: Copy jdbc jar to local maven repo
+  copy:
+   src: ojdbc7-12.1.0.1.jar
+   dest: /var/lib/jenkins/.m2/repository/com/oracle/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar
+   owner: jenkins
+   group: jenkins
+   mode: 0755
+
+- name: Copy maven settings.xml
+  copy:
+   src: settings.xml
+   dest: /var/lib/jenkins/settings.xml
+   owner: jenkins
+   group: jenkins
+   mode: 0755
+
+- name: Copy maven installer settings          
+  copy:
+   src: hudson.tasks.Maven.xml       
+   dest: /var/lib/jenkins/hudson.tasks.Maven.xml                                                 
+   owner: jenkins
+   group: jenkins
+   mode: 0755
+  become: yes
+  notify:
+   - Restart Jenkins

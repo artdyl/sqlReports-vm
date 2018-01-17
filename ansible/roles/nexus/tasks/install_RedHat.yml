@@ -1,0 +1,47 @@
+---
+# included file
+
+- name: Nexus User Registration
+  user:
+    name: "{{ nexus3_username }}"
+  become: yes
+
+- name: Nexus Home Directory
+  file:
+    path: "{{ nexus3_home }}"
+    owner: "{{ nexus3_username }}"
+    group: "{{ nexus3_username }}"
+    state: directory
+  become: yes
+
+# see. https://support.sonatype.com/hc/en-us/articles/218637467-Download-Nexus-Repository-Manager-3
+- name: Nexus Archive File
+  get_url:
+    url: "http://download.sonatype.com/nexus/3/{{ nexus3_version }}-unix.tar.gz"
+    checksum: "{{ nexus3_get_url_checksum }}"
+    dest: "/tmp/{{ nexus3_version }}-unix.tar.gz"
+    owner: root
+    group: root
+    mode: 0444
+    validate_certs: "{{ nexus3_get_url_validate_certs }}"
+    timeout: "{{ nexus3_get_url_timeout }}"
+  become: yes
+
+- name: Nexus Installation
+  unarchive:
+    src: "/tmp/{{ nexus3_version }}-unix.tar.gz"
+    copy: no
+    creates: "{{ nexus3_home }}/{{ nexus3_version }}"
+    dest: "{{ nexus3_home }}"
+    owner: "{{ nexus3_username }}"
+    group: "{{ nexus3_username }}"
+  become: yes
+  become_user: "{{ nexus3_username }}"
+
+- name: Nexus Service Configuration
+  template:
+    src: nexus.service
+    dest: /etc/systemd/system/nexus.service
+    owner: root
+    group: root
+  become: yes
