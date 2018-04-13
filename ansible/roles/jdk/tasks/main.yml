@@ -1,5 +1,4 @@
 ---
-# tasks file for jdk
 
 - name: "Install Java 8 for {{ansible_os_family}}"
   include: "{{ansible_os_family}}.yml"
